@@ -80,7 +80,4 @@ test:
 #
 production:
   <<: *default
-  host: <%= ENV['PROD_DB_HOST'] %>
-  database: <%= ENV['PROD_DB_NAME'] %>
-  username: <%= ENV['PROD_DB_USER'] %>
-  password: <%= ENV['PROD_DB_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
