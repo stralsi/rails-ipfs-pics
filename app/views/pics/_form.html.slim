@@ -1,0 +1,23 @@
+== form_for(@pic) do |f|
+  - if @pic.errors.any?
+    #error_explanation
+      h2 = pluralize(@pic.errors.count, "error")
+        | prohibited this pic from being saved:
+
+      ul
+       - @pic.errors.full_messages.each do |message|
+        li = message
+
+  .field
+    = f.label :name
+    br
+    = f.text_field :name
+
+
+  .field
+    = f.label :ipfs_hash
+    br
+    = f.text_field :ipfs_hash
+
+  .actions
+    = f.submit

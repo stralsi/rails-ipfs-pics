@@ -1,0 +1,13 @@
+p#notice = notice
+
+p
+  strong Name:
+  = @pic.name
+
+p
+  strong Ipfs hash:
+  = @pic.ipfs_hash
+
+=<> link_to 'Edit', edit_pic_path(@pic)
+||
+=<> link_to 'Back', pics_path
