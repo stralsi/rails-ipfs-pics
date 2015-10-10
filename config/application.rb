@@ -1,5 +1,8 @@
 require File.expand_path('../boot', __FILE__)
 
+#start the ipfs daemon, which will be accessible by default at /ip4/127.0.0.1/tcp/5001
+system './bin/ipfs daemon --init &'
+
 require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems

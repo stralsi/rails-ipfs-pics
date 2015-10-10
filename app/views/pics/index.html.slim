@@ -2,18 +2,12 @@ p#notice = notice
 
 h1 Listing Pics
 
-table
-  thead
-    tr
-      th Name
-      th Ipfs hash
-      th colspan="3"
 
-  tbody
+div
     - @pics.each do |pic|
-      tr
-        td = pic.name
-        td = pic.ipfs_hash
+      div
+        h3 = pic.name
+        = image_tag 'http://gateway.ipfs.io/ipfs/'+pic.ipfs_hash
         td = link_to 'Show', pic
         td = link_to 'Edit', edit_pic_path(pic)
         td = link_to 'Destroy', pic, method: :delete, data: { confirm: 'Are you sure?' }
