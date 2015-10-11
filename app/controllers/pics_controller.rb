@@ -31,8 +31,11 @@ class PicsController < ApplicationController
     file_name = pic_params.original_filename
     file_content = pic_params.read
 
+    image = MiniMagick::Image.read file_content, '.jpg'
+    image.resize "100x100"
+
     file_node = IPFS::Upload.file file_name do |fd|
-      fd.write file_content
+      fd.write image.to_blob
     end
 
     @ipfs_conn.add file_node do |node|
