@@ -1,23 +1,15 @@
-== form_for(@pic) do |f|
+|form_tag
+== form_tag({action: :create}, multipart:true) do
   - if @pic.errors.any?
     #error_explanation
       h2 = pluralize(@pic.errors.count, "error")
         | prohibited this pic from being saved:
 
       ul
-       - @pic.errors.full_messages.each do |message|
-        li = message
+        - @pic.errors.full_messages.each do |message|
+          li = message
 
   .field
-    = f.label :name
-    br
-    = f.text_field :name
-
-
-  .field
-    = f.label :ipfs_hash
-    br
-    = f.text_field :ipfs_hash
-
+    = file_field_tag 'uploaded_file'
   .actions
-    = f.submit
+    = submit_tag 'upload'

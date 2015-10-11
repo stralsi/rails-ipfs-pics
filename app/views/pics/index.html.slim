@@ -3,15 +3,10 @@ p#notice = notice
 h1 Listing Pics
 
 
+= link_to 'New Pic', new_pic_path
+
 div
     - @pics.each do |pic|
       div
         h3 = pic.name
-        = image_tag 'http://gateway.ipfs.io/ipfs/'+pic.ipfs_hash
-        td = link_to 'Show', pic
-        td = link_to 'Edit', edit_pic_path(pic)
-        td = link_to 'Destroy', pic, method: :delete, data: { confirm: 'Are you sure?' }
-
-br
-
-= link_to 'New Pic', new_pic_path
+        = image_tag 'http://127.0.0.1:8080/ipfs/'+pic.ipfs_hash

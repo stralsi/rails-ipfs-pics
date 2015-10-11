@@ -2,26 +2,11 @@ require 'ipfs-api'
 
 class PicsController < ApplicationController
   before_action :set_pic, only: [:show, :edit, :update, :destroy]
+  before_action :set_ipfs_conn
 
   # GET /pics
   # GET /pics.json
   def index
-    ipfs = IPFS::Connection.new
-
-    folder = IPFS::Upload.folder('test') do |test|
-      test.add_file('hello.txt') do |fd|
-        fd.write 'Hello'
-      end
-      test.add_file('world.txt') do |fd|
-        fd.write 'World'
-      end
-    end
-
-    ipfs.add folder do |node|
-      # display each uploaded node:
-      print "#{node.name}: #{node.hash}\n" if node.finished?
-    end
-
     @pics = Pic.all
   end
 
@@ -42,7 +27,17 @@ class PicsController < ApplicationController
   # POST /pics
   # POST /pics.json
   def create
-    @pic = Pic.new(pic_params)
+
+    file_name = pic_params.original_filename
+    file_content = pic_params.read
+
+    file_node = IPFS::Upload.file file_name do |fd|
+      fd.write file_content
+    end
+
+    @ipfs_conn.add file_node do |node|
+      @pic = Pic.new({name: node.name,ipfs_hash: node.hash}) if node.finished?
+    end
 
     respond_to do |format|
       if @pic.save
@@ -87,6 +82,10 @@ class PicsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def pic_params
-      params.require(:pic).permit(:name, :ipfs_hash)
+      params.require(:uploaded_file)
+    end
+
+    def set_ipfs_conn
+      @ipfs_conn = IPFS::Connection.new
     end
 end
