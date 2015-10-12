@@ -33,7 +33,6 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
 
 gem 'slim', '~> 3.0.6'
-gem 'ipfs-api', '~> 0.1.0'
 gem 'mini_magick', '~> 4.3.5'
 gem 'rest-client', '~> 1.8.0'
 

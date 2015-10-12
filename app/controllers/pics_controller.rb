@@ -1,9 +1,7 @@
-require 'ipfs-api'
 require 'rest-client'
 
 class PicsController < ApplicationController
   before_action :set_pic, only: [:show]
-  before_action :set_ipfs_conn
 
   # GET /pics
   # GET /pics.json
@@ -61,10 +59,6 @@ class PicsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def upload_params
       params.require(:uploaded_file)
-    end
-
-    def set_ipfs_conn
-      @ipfs_conn = IPFS::Connection.new
     end
 
     def post_to_ipfs(file_path)
