@@ -30,25 +30,18 @@ class PicsController < ApplicationController
   def create
 
     file_name = pic_params.original_filename
+    thumb_file_name = 'thumb_'+file_name
     file_content = pic_params.read
+
+    ipfs_hash = post_to_ipfs(pic_params.tempfile)
 
     image = MiniMagick::Image.read file_content, '.jpg'
     image.resize "500x500"
-    image.write file_name
+    image.write thumb_file_name
 
-    File.open file_name do |f|
-      begin
-        response = RestClient.post 'http://127.0.0.1:5001/api/v0/add', :myfile => f
-        hashResponse = JSON.parse response
+    thumb_hash = post_to_ipfs(thumb_file_name)
 
-        @pic = Pic.new({name: file_name, ipfs_hash: hashResponse["Hash"]})
-      rescue Exception => e
-        Rails.logger.error e
-      end
-    end
-
-    File.delete file_name
-
+    @pic = Pic.new({:name => file_name, :ipfs_hash => ipfs_hash, :thumbnail_ipfs_hash => thumb_hash})
 
 
     # file_node = IPFS::Upload.file file_name do |fd|
@@ -69,6 +62,8 @@ class PicsController < ApplicationController
       end
     end
   end
+
+
 
   # PATCH/PUT /pics/1
   # PATCH/PUT /pics/1.json
@@ -107,5 +102,23 @@ class PicsController < ApplicationController
 
     def set_ipfs_conn
       @ipfs_conn = IPFS::Connection.new
+    end
+
+    def post_to_ipfs(file_path)
+      result_hash = ''
+      File.open file_path do |f|
+        begin
+          response = RestClient.post 'http://127.0.0.1:5001/api/v0/add', :myfile => f
+          hashResponse = JSON.parse response
+
+          result_hash = hashResponse["Hash"]
+        rescue Exception => e
+          Rails.logger.error e
+        end
+      end
+
+      File.delete file_path
+
+      return result_hash
     end
 end

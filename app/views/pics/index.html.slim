@@ -9,4 +9,4 @@ div
     - @pics.each do |pic|
       div
         h3 = pic.name
-        = image_tag 'http://127.0.0.1:8080/ipfs/'+pic.ipfs_hash
+        = image_tag 'http://127.0.0.1:8080/ipfs/'+pic.thumbnail_ipfs_hash
