@@ -1,12 +1,7 @@
 p#notice = notice
 
-h1 Listing Pics
-
-
-= link_to 'New Pic', new_pic_path
-
-div
-    - @pics.each do |pic|
-      div
-        h3 = pic.name
-        = image_tag 'http://127.0.0.1:8080/ipfs/'+pic.thumbnail_ipfs_hash
+.container
+  - @pics.each do |pic|
+    p
+      = link_to pic_path pic do
+        = image_tag 'http://127.0.0.1:8080/ipfs/'+pic.thumbnail_ipfs_hash, {:class=>'img-rounded center-block', :alt=>pic.name}

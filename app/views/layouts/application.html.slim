@@ -7,4 +7,17 @@ html
     == csrf_meta_tags
 
 body
-  == yield
+  nav class="navbar navbar-default navbar-static-top"
+    .container
+      .navbar-header
+        a[class="navbar-brand" href="#"]
+          |Rails IPFS Image Upload
+
+      ul class="nav navbar-nav"
+        li class="#{'active' if current_page?(pics_path)}"
+          =link_to 'Browse', pics_path
+        li class="#{'active' if current_page?(new_pic_path)}"
+          =link_to 'Upload', new_pic_path
+
+  .container
+    == yield

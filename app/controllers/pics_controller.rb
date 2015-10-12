@@ -75,7 +75,7 @@ class PicsController < ApplicationController
 
     def create_thumbnail(thumb_file_path, file_content)
       image = MiniMagick::Image.read file_content, '.jpg'
-      image.resize "500x500"
+      image.resize "800x800"
       image.write thumb_file_path
     end
 end

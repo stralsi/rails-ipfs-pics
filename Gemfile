@@ -35,6 +35,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'slim', '~> 3.0.6'
 gem 'mini_magick', '~> 4.3.5'
 gem 'rest-client', '~> 1.8.0'
+gem 'bootstrap-sass', '~> 3.3.5.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
