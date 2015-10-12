@@ -1,4 +1,5 @@
 require 'ipfs-api'
+require 'rest-client'
 
 class PicsController < ApplicationController
   before_action :set_pic, only: [:show, :edit, :update, :destroy]
@@ -32,15 +33,31 @@ class PicsController < ApplicationController
     file_content = pic_params.read
 
     image = MiniMagick::Image.read file_content, '.jpg'
-    image.resize "100x100"
+    image.resize "500x500"
+    image.write file_name
 
-    file_node = IPFS::Upload.file file_name do |fd|
-      fd.write image.to_blob
+    File.open file_name do |f|
+      begin
+        response = RestClient.post 'http://127.0.0.1:5001/api/v0/add', :myfile => f
+        hashResponse = JSON.parse response
+
+        @pic = Pic.new({name: file_name, ipfs_hash: hashResponse["Hash"]})
+      rescue Exception => e
+        Rails.logger.error e
+      end
     end
 
-    @ipfs_conn.add file_node do |node|
-      @pic = Pic.new({name: node.name,ipfs_hash: node.hash}) if node.finished?
-    end
+    File.delete file_name
+
+
+
+    # file_node = IPFS::Upload.file file_name do |fd|
+    #   fd.write image.to_blob
+    # end
+    #
+    # @ipfs_conn.add file_node do |node|
+    #   @pic = Pic.new({name: node.name,ipfs_hash: node.hash}) if node.finished?
+    # end
 
     respond_to do |format|
       if @pic.save
