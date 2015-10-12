@@ -2,7 +2,7 @@ require 'ipfs-api'
 require 'rest-client'
 
 class PicsController < ApplicationController
-  before_action :set_pic, only: [:show, :edit, :update, :destroy]
+  before_action :set_pic, only: [:show]
   before_action :set_ipfs_conn
 
   # GET /pics
@@ -19,10 +19,6 @@ class PicsController < ApplicationController
   # GET /pics/new
   def new
     @pic = Pic.new
-  end
-
-  # GET /pics/1/edit
-  def edit
   end
 
   # POST /pics
@@ -53,31 +49,6 @@ class PicsController < ApplicationController
         format.html { render :new }
         format.json { render json: @pic.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-
-  # PATCH/PUT /pics/1
-  # PATCH/PUT /pics/1.json
-  def update
-    respond_to do |format|
-      if @pic.update(upload_params)
-        format.html { redirect_to @pic, notice: 'Pic was successfully updated.' }
-        format.json { render :show, status: :ok, location: @pic }
-      else
-        format.html { render :edit }
-        format.json { render json: @pic.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /pics/1
-  # DELETE /pics/1.json
-  def destroy
-    @pic.destroy
-    respond_to do |format|
-      format.html { redirect_to pics_url, notice: 'Pic was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 
