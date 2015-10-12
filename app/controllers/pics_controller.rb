@@ -28,32 +28,25 @@ class PicsController < ApplicationController
   # POST /pics
   # POST /pics.json
   def create
+    begin
+      ipfs_hash = post_to_ipfs upload_params.tempfile
 
-    file_name = pic_params.original_filename
-    thumb_file_name = 'thumb_'+file_name
-    file_content = pic_params.read
+      thumb_file_name = 'thumb_'+upload_params.original_filename
+      create_thumbnail thumb_file_name, upload_params.read
+      thumb_hash = post_to_ipfs thumb_file_name
 
-    ipfs_hash = post_to_ipfs(pic_params.tempfile)
+      @pic = Pic.new ({:name=>upload_params.original_filename,
+                      :ipfs_hash=>ipfs_hash,
+                      :thumbnail_ipfs_hash => thumb_hash})
 
-    image = MiniMagick::Image.read file_content, '.jpg'
-    image.resize "500x500"
-    image.write thumb_file_name
-
-    thumb_hash = post_to_ipfs(thumb_file_name)
-
-    @pic = Pic.new({:name => file_name, :ipfs_hash => ipfs_hash, :thumbnail_ipfs_hash => thumb_hash})
-
-
-    # file_node = IPFS::Upload.file file_name do |fd|
-    #   fd.write image.to_blob
-    # end
-    #
-    # @ipfs_conn.add file_node do |node|
-    #   @pic = Pic.new({name: node.name,ipfs_hash: node.hash}) if node.finished?
-    # end
+    rescue Exception => e
+      Rails.logger.error e
+    ensure
+      File.delete thumb_file_name if File.exists? thumb_file_name
+    end
 
     respond_to do |format|
-      if @pic.save
+      if !@pic.nil? and @pic.save
         format.html { redirect_to @pic, notice: 'Pic was successfully created.' }
         format.json { render :show, status: :created, location: @pic }
       else
@@ -64,12 +57,11 @@ class PicsController < ApplicationController
   end
 
 
-
   # PATCH/PUT /pics/1
   # PATCH/PUT /pics/1.json
   def update
     respond_to do |format|
-      if @pic.update(pic_params)
+      if @pic.update(upload_params)
         format.html { redirect_to @pic, notice: 'Pic was successfully updated.' }
         format.json { render :show, status: :ok, location: @pic }
       else
@@ -96,7 +88,7 @@ class PicsController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def pic_params
+    def upload_params
       params.require(:uploaded_file)
     end
 
@@ -107,18 +99,18 @@ class PicsController < ApplicationController
     def post_to_ipfs(file_path)
       result_hash = ''
       File.open file_path do |f|
-        begin
-          response = RestClient.post 'http://127.0.0.1:5001/api/v0/add', :myfile => f
-          hashResponse = JSON.parse response
+        response = RestClient.post 'http://127.0.0.1:5001/api/v0/add', :myfile => f
+        hashResponse = JSON.parse response
 
-          result_hash = hashResponse["Hash"]
-        rescue Exception => e
-          Rails.logger.error e
-        end
+        result_hash = hashResponse["Hash"]
       end
 
-      File.delete file_path
-
       return result_hash
+    end
+
+    def create_thumbnail(thumb_file_path, file_content)
+      image = MiniMagick::Image.read file_content, '.jpg'
+      image.resize "500x500"
+      image.write thumb_file_path
     end
 end
